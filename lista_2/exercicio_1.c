@@ -11,7 +11,7 @@
 #include <wctype.h>
 
 #define NUM_QUESTOES 8
-#define NUM_ALUNOS 1
+#define NUM_ALUNOS 10
 
 // Entidade Aluno
 typedef struct {
@@ -20,11 +20,11 @@ typedef struct {
   float final_grade;
 } Aluno;
 
-float calculate_grades(char answers[], char ans_template[], float weigth[]) {
+float calculate_grades(char answers[], char ans_template[], float weight[]) {
   float sum = 0.0;
   for (int i = 0; i < NUM_QUESTOES; i++) {
     if (answers[i] == ans_template[i]) {
-      sum += weigth[i];
+      sum += weight[i];
     }
   }
   return sum;
@@ -32,7 +32,7 @@ float calculate_grades(char answers[], char ans_template[], float weigth[]) {
 
 int main() {
   char ans_template[NUM_QUESTOES];
-  float weigth[NUM_QUESTOES] = {1.0, 1.0, 2.0, 1.0, 1.0, 1.0, 1.0, 2.0};
+  float weight[NUM_QUESTOES] = {1.0, 1.0, 2.0, 1.0, 1.0, 1.0, 1.0, 2.0};
   Aluno alunos[NUM_ALUNOS];
 
   // 1. Cadastro de gabarito
@@ -50,12 +50,12 @@ int main() {
 
     for (int j = 0; j < NUM_QUESTOES; j++) {
       printf("Resposta Questão %d: ", j + 1);
-      scanf(" %c", &alunos[j].answers[j]);
+      scanf(" %c", &alunos[i].answers[j]);
     }
 
     // 3. Calculo das notas
     alunos[i].final_grade =
-        calculate_grades(alunos[i].answers, ans_template, weigth);
+        calculate_grades(alunos[i].answers, ans_template, weight);
   }
 
   // 4. Motra os resultados

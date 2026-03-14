@@ -46,11 +46,9 @@ void withdraw(bankAccount *account, float value) {
 int main() {
     bankAccount accounts[10];
 
-
     create_account(&accounts[0]);
     deposit(&accounts[0], 100);
     withdraw(&accounts[0], 50);
-
 
     return 0;
 }

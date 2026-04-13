@@ -23,13 +23,13 @@
  */
 typedef struct Node {
     int data;           // O valor armazenado
-    struct Node *next;  // Ponteiro para o proximo Nó
+    struct Node *prev, *next;  // Ponteiro para o proximo Nó e para o anterior
 } Node;
 
 /**
  * Estrutura LinkedList(Lista Encadeada): Guarda a referencia do primeiro elemento (Head).
  */
-typedef struct LinkedList {
+typedef struct DoublyLinkedList {
     Node *head;         // Ponteiro para o inicio da lista
     int size;           // guarda o tamanho atual para performance
 } LinkedList;
@@ -49,6 +49,7 @@ Node* createNode(int value) {
     // 3. Inicialização
     newNode->data = value;
     newNode->next = NULL;// sempre começa com NULL
+    newNode->prev = NULL;
 
     return newNode;
 }
@@ -330,30 +331,6 @@ int main() {
                 printf("Opcao invalida!\n");
         }
     } while(option != 0);
-
-    return 0;
-
-
-    // insere no inicio e fim test 
-    // insertAtFront(&linkedlist, 10);
-    // insertAtFront(&linkedlist, 20);
-    // insertAtFront(&linkedlist, 30);
-    // insereAtEnd(&linkedlist,50);
-    // insereAtEnd(&linkedlist,80);
-    // removeAtFront(&linkedlist);
-    // removeAtEnd(&linkedlist);
-    
-    
-    // // insertAtMiddle(&linkedlist, 7);
-    // // insertAtMiddle(&linkedlist, 5);
-    // // insertAtMiddle(&linkedlist, 2);
-    // // insertAtMiddle(&linkedlist, 9);
-    
-    // printList(&linkedlist);
-    
-    // // Testando a busca
-    // searchByValue(&linkedlist, 20); // Esperado: Encontrar o valor
-    // searchByValue(&linkedlist, 99); // Esperado: Nao encontrar o valor
 
     return 0;
 }

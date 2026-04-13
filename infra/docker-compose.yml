@@ -1,0 +1,15 @@
+services:
+  mysql-db:
+    image: mysql:8.0
+    ports:
+      - "3307:3306"
+    environment:
+      # Credenciais do banco (essenciais para a primeira inicialização)
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: db2_exercicios
+    volumes:
+      # Onde o MySQL guarda as tabelas para não sumirem quando o PC desligar
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  mysql_data:

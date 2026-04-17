@@ -99,6 +99,8 @@ int insereAtEnd(LinkedList *list, int value) {
         }
         // 4. Conectamos o novo nó ao fim da linha
         current->next = node;
+        // 5. O "prev" do novo nó aponta para o antigo último nó (mão dupla!)
+        node->prev = current;
     }
     list->size++;
     return 1;
@@ -113,6 +115,11 @@ int insertAtMiddle(LinkedList *list, int value){
     // CASO 1: lista vazia ou menor valor por primeiro
     if (list->head == NULL || list->head->data >= value) {
         node->next = list->head;
+        
+        // Assim como no insertAtFront, conectamos o prev do antigo primeiro nó
+        if (list->head != NULL) {
+            list->head->prev = node;
+        }
         list->head = node; 
     } else {
         // CASO 2: Inserir no meio ou no fim
@@ -122,7 +129,17 @@ int insertAtMiddle(LinkedList *list, int value){
         while (current->next != NULL && current->next->data < value) {
             current = current->next;
         }
+        
+        // Passo 1: O "next" do novo nó aponta para o próximo nó
         node->next = current->next;
+        // Passo 2: O "prev" do novo nó aponta para o "current"
+        node->prev = current;
+        
+        // Passo 3: Se houver um próximo nó (não inserimos no fim absoluto), atualizamos o "prev" dele
+        if (current->next != NULL) {
+            current->next->prev = node;
+        }
+        // Passo 4: O "next" do current finalmente aponta para o novo nó
         current->next = node;
     }
     list->size++;
@@ -137,9 +154,16 @@ int removeAtFront(LinkedList *list) {
     Node *aux = list->head;
     // 3. head passa a apontar para o próximo nó
     list->head = list->head->next;
-    // 4. libera o nó removido
+    
+    // 4. Se a lista ainda tiver elementos (o novo head não é NULL),
+    // o "prev" do novo head deve apontar para NULL, pois ele agora é o primeiro!
+    if (list->head != NULL) {
+        list->head->prev = NULL;
+    }
+
+    // 5. libera o nó removido
     free(aux);
-    // 5. atualiza o tamanho da lista
+    // 6. atualiza o tamanho da lista
     list->size--;
     return 1;
 }
@@ -333,7 +357,7 @@ int main() {
                 break;
             case 3:
                 printf("Valor: "); scanf("%d", &value);
-                insertAtFront(&linkedlist, value);
+                insereAtEnd(&linkedlist, value);
                 break;
             case 4:
                 removeAtFront(&linkedlist);

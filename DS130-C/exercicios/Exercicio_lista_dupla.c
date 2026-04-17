@@ -64,7 +64,7 @@ void lerPessoa(Pessoa *p)
     scanf("%c", &p->sexo);
 }
 
-void inseirAntes(ListaDE *l, No *ref, Pessoa p)
+void inserirAntes(ListaDE *l, No *ref, Pessoa p)
 {
     No *novo = criaNo(p);
     if (novo == NULL) return;
@@ -86,7 +86,7 @@ void insereFim(ListaDE *l)
 {
     Pessoa p;
     lerPessoa(&p);
-    inseirAntes(l, l->cabeca, p);
+    inserirAntes(l, l->cabeca, p);
 }
 
 int tamanhoLista(ListaDE *l)

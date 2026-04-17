@@ -64,11 +64,19 @@ void initList(LinkedList *list) {
 int insertAtFront(LinkedList *list,int value){
     Node *node = createNode(value);
     if (node == NULL) return 0; // erro
-    // 1. O proximo do novo NÓ aponta aponta para onde a lista começava
+    
+    // lista vazia: o novo nó é o head
+    // 1. O próximo do novo nó aponta para onde a lista começava (antigo head)
     node->next = list->head;
-    // 2. A "cabeça" da lista passa a ser o novo NÓ
+    
+    // 2. Se a lista não estiver vazia, o 'prev' do antigo head aponta para o novo nó
+    if (list->head != NULL) {
+        list->head->prev = node;
+    }
+    
+    // 3. A "cabeça" da lista passa a ser o novo nó
     list->head = node;
-    // 3. Aumenta o tamanho da lista
+    // 4. Aumenta o tamanho da lista
     list->size++;
     return 1;
 }
@@ -243,13 +251,36 @@ void printList(LinkedList *L) {
     printf("Lista Encadeada: ");
     // 3. Enquanto o ponteiro não for NULL, continuamos imprimindo
     while (current != NULL) {
-        printf("[%d] -> ", current->data);
+        printf("[%d] <-> ", current->data);
         
         // O "pulo": o ponteiro atual passa a ser o próximo
         current = current->next;
     }
     printf("NULL\n");
 }
+
+// 9.1 Imprime a lista de trás para frente (Para testar o ponteiro prev)
+void printListReverse(LinkedList *L) {
+    if (L == NULL || L->head == NULL) {
+        printf("A lista esta vazia.\n");
+        return;
+    }
+    
+    // 1. Navega até o último nó da lista
+    Node *current = L->head;
+    while (current->next != NULL) {
+        current = current->next;
+    }
+    
+    // 2. Percorre a lista de trás para frente usando o prev
+    printf("Lista Reversa:   ");
+    while (current != NULL) {
+        printf("[%d] <-> ", current->data);
+        current = current->prev; // O "pulo" agora é para trás!
+    }
+    printf("NULL\n");
+}
+
 // 10. Deletar a lissta
 int deleteLinkedList(LinkedList *L) {
     // 1. Valida se a lista existe
@@ -283,10 +314,10 @@ int main() {
     int option, value, index;
 
     do {
-        printf("\n--- MENU LISTA ESTATICA ---\n");
+        printf("\n--- MENU LISTA DUPLAMENTE ENCADEADA ---\n");
         printf("1. Inserir Inicio  | 2. Inserir Meio | 3. Inserir Fim\n");
         printf("4. Remover Inicio  | 5. Remover Fim  | 6. Remover do Indice\n");
-        printf("7. Buscar Elemento | 8. Imprimir     | 9. Deletar Lista\n");
+        printf("7. Buscar Elemento | 8. Imprimir (Normal) | 88. Imprimir (Reverso) | 9. Deletar Lista\n");
         printf("0. Sair\n");
         printf("Escolha: ");
         scanf("%d", &option);
@@ -320,6 +351,9 @@ int main() {
                 break;
             case 8:
                 printList(&linkedlist);
+                break;
+            case 88:
+                printListReverse(&linkedlist);
                 break;
             case 9:
                 deleteLinkedList(&linkedlist);

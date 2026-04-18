@@ -32,7 +32,7 @@ typedef struct Node {
 typedef struct LinkedList {
     Node *head;         // Ponteiro para o inicio da lista
     int size;           // guarda o tamanho atual para performance
-} LinkedList;
+} CircularLinkedList;
 
 
 Node* createNode(int value) {
@@ -54,74 +54,106 @@ Node* createNode(int value) {
 }
 
 // 1. Inicializa a lista
-void initList(LinkedList *list) {
+void initList(CircularLinkedList *list) {
         list->head = NULL;
         list->size = 0;
 };
 
 // 2. Insere no inicio
-int insertAtFront(LinkedList *list,int value){
+int insertAtLeft(CircularLinkedList *list,int value){
+    if (list == NULL) return 0; // erro
+
     Node *node = createNode(value);
     if (node == NULL) return 0; // erro
-    // 1. O proximo do novo NÓ aponta aponta para onde a lista começava
-    node->next = list->head;
-    // 2. A "cabeça" da lista passa a ser o novo NÓ
-    list->head = node;
-    // 3. Aumenta o tamanho da lista
+
+    // Caso 1: lista vazia
+    if (list->head == NULL) {
+        node->next = node;   // aponta para si mesmo (circular)
+        list->head = node;
+    } else {
+        // Caso 2: lista com elementos -> achar o ultimo
+        Node *tail = list->head;
+        while (tail->next != list->head) {
+            tail = tail->next;
+        }
+
+        node->next = list->head; // novo aponta para antigo head
+        tail->next = node;       // ultimo aponta para novo head
+        list->head = node;       // atualiza head
+    }
+
     list->size++;
     return 1;
 }
 
 // 3. insere no fim
-int insereAtEnd(LinkedList *list, int value) {
-    // 1. Crio o novo nodo e insiro o valor
+int insereAtRight(CircularLinkedList *list, int value) {
+    if (list == NULL) return 0;
+
     Node *node = createNode(value);
     if (node == NULL) return 0;
 
-    // 2. CASO ESPECIAL: Se a lista estiver vazia, o fim é o próprio início
+    // Caso 1: lista vazia
     if (list->head == NULL) {
+        node->next = node;   // aponta para si mesmo (circular)
         list->head = node;
     } else {
-        // 3. Caso contrário, precisamos navegar até o último nó
-        Node *current = list->head;
-        // O loop para no nó que aponta para NULL (o último atual)
-        while (current->next != NULL) {
-            current = current->next;
+        // Caso 2: lista com elementos -> achar o ultimo
+        Node *tail = list->head;
+        while (tail->next != list->head) {
+            tail = tail->next;
         }
-        // 4. Conectamos o novo nó ao fim da linha
-        current->next = node;
+
+        tail->next = node;       // antigo ultimo aponta para novo
+        node->next = list->head; // novo ultimo aponta para head
     }
+
     list->size++;
     return 1;
 }
 
 // 4. Insere no meio, deforma ordenada | USO EXCLUSIVO
-int insertAtMiddle(LinkedList *list, int value){
+int insertByOrder(CircularLinkedList *list, int value){
     // Cria o nodo e insere o valor
     Node *node = createNode(value);
     if (node == NULL) return 0;
 
-    // CASO 1: lista vazia ou menor valor por primeiro
-    if (list->head == NULL || list->head->data >= value) {
-        node->next = list->head;
-        list->head = node; 
-    } else {
-        // CASO 2: Inserir no meio ou no fim
-        Node *current = list->head;
-        // Percorre ate achar o no cujo PROXIMO seja maior que o nosso valor
-        // Ou ate chegar no ultimo no (next == NULL)
-        while (current->next != NULL && current->next->data < value) {
-            current = current->next;
-        }
-        node->next = current->next;
-        current->next = node;
+    // CASO 1: lista vazia
+    if (list->head == NULL) {
+        node->next = node;
+        list->head = node;
+        list->size++;
+        return 1;
     }
+
+    // Caso 2: inserir antes do head (novo menor)
+    if (value <= list->head->data) {
+        Node *tail = list->head;
+        while (tail->next != list->head) {
+            tail = tail->next;
+        }
+        node->next = list->head;
+        tail->next = node;
+        list->head = node;
+        list->size++;
+        return 1;
+    }
+
+    // Caso 3/4: meio ou fim
+    Node *current = list->head;
+    while (current->next != list->head && current->next->data < value) {
+        current = current->next;
+    }
+
+    node->next = current->next;
+    current->next = node;
     list->size++;
     return 1;
+
  }
 
 // 5. remove do inicio
-int removeAtFront(LinkedList *list) {
+int removeAtFront(CircularLinkedList *list) {
     // 1. valida se a lista existe e não está vazia
     if (list == NULL || list->head == NULL) return 0;
     // 2. guarda o primeiro nó antes de avançar o head
@@ -136,7 +168,7 @@ int removeAtFront(LinkedList *list) {
 }
 
 // 6. remove no fim
-int removeAtEnd(LinkedList *list) {
+int removeAtEnd(CircularLinkedList *list) {
     // Caso a lista nao exista ou esja vazia
     if (list == NULL || list->head == NULL) return 0;
     // caso com apenas um nó
@@ -161,7 +193,7 @@ int removeAtEnd(LinkedList *list) {
 }
 
 // 7. remove um elemento qualquer (por valor)
-int removeByValue(LinkedList *list, int value) {
+int removeByValue(CircularLinkedList *list, int value) {
     // Caso a lista nao exista ou esteja vazia
     if (list == NULL || list->head == NULL) return 0;
 
@@ -204,7 +236,7 @@ int removeByValue(LinkedList *list, int value) {
 }
 
 // 8. Busca um elemento qualquer
-int searchByValue(LinkedList *list, int value) {
+int searchByValue(CircularLinkedList *list, int value) {
     // 1. Verifica se a lista existe e nao esta vazia
     if (list == NULL || list->head == NULL) {
         return -1;
@@ -229,7 +261,7 @@ int searchByValue(LinkedList *list, int value) {
 }
 
 // 9. Imprime a lista
-void printList(LinkedList *L) {
+void printList(CircularLinkedList *L) {
     // 1. Verificamos se a lista existe e se não está vazia
     if (L == NULL || L->head == NULL) {
         printf("A lista esta vazia.\n");
@@ -250,7 +282,7 @@ void printList(LinkedList *L) {
     printf("NULL\n");
 }
 // 10. Deletar a lissta
-int deleteLinkedList(LinkedList *L) {
+int deleteLinkedList(CircularLinkedList *L) {
     // 1. Valida se a lista existe
     if (L == NULL) return 0;
     
@@ -293,15 +325,15 @@ int main() {
         switch(option) {
             case 1:
                 printf("Valor: "); scanf("%d", &value);
-                insertAtFront(&linkedlist, value);
+                insertAtLeft(&linkedlist, value);
                 break;
             case 2:
                 printf("Valor: "); scanf("%d", &value);
-                insertAtMiddle(&linkedlist, value);
+                insertByOrder(&linkedlist, value);
                 break;
             case 3:
                 printf("Valor: "); scanf("%d", &value);
-                insertAtFront(&linkedlist, value);
+                insertAtLeft(&linkedlist, value);
                 break;
             case 4:
                 removeAtFront(&linkedlist);
